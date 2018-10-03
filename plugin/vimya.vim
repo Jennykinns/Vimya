@@ -379,63 +379,30 @@ def vimyaResetLog ():
 
     return True
 
-def vimyaSend (commands):
 
-    """Send commands to Maya's command port.
+def vimyaSend(commands):
+    socketPath = vim.eval('g:vimyaSocket')
+    timeout = vim.eval('g:vimyaTimeout')
+    host = vim.eval('g:vimyaHost')
+    port = int(vim.eval('g:vimyaPort'))
 
-    vimyaSend (commands) : int
+    if not socketPath == '':
+        connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    else:
+        connection = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+    connection.settimeout(float(timeout))
 
-    This function will open a connection to Maya's command port (as configured), and send the
-    commands - which must be a list of one or more strings - to Maya. A newline will be appended
-    to every command automatically. Commands will be sent in the order they appear in the list.
+    if not socketPath == '':
+        connection.connect(socketPath)
+    else:
+        connection.connect((host, port))
+    connection.send('; '.join(commands))
 
-    Socket exceptions will be caught and an appropriate error message will be displayed. After an
-    exception, no attempt will be made to send any more commands from the list.
+    connection.shutdown(socket.SHUT_WR)
+    connection.close()
 
-    Returns the number of commands successfully sent to Maya.
-    """
+    return len(commands)
 
-    socketPath =      vim.eval ('g:vimyaSocket' )
-    timeout    =      vim.eval ('g:vimyaTimeout')
-    host       =      vim.eval ('g:vimyaHost'   )
-    port       = int (vim.eval ('g:vimyaPort'   ))
-
-    try:
-        if socketPath != '':
-            connection = socket.socket (socket.AF_UNIX, socket.SOCK_STREAM)
-        else:
-            connection = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-        if timeout == '':
-            connection.settimeout (None)
-        else:
-            connection.settimeout (float (timeout))
-    except socket.error as e:
-        __vimyaError ('Could not initialize the socket: %s' % str (e))
-        return 0
-
-    try:
-        if socketPath != '':
-            connection.connect (socketPath)
-        else:
-            connection.connect ((host, port))
-    except socket.error as e:
-        __vimyaError ('Could not connect to command port: %s' % str (e))
-        return 0
-
-    sent = 0
-
-    try:
-        try:
-            for command in commands:
-                connection.send ('%s\n' % command)
-                sent = sent + 1
-        except socket.error as e:
-            __vimyaError ('Sending a command failed: %s' % str (e))
-    finally:
-        connection.shutdown (socket.SHUT_WR)
-        connection.close ()
-
-    return sent
 
 def vimyaRun (forceBuffer = False, userCmd = None):
 
@@ -501,7 +468,7 @@ def vimyaRun (forceBuffer = False, userCmd = None):
     finally:
         os.close (tmpHandle)
 
-    commands = ['commandEcho -state on -lineNumbers on;']
+    commands = ['commandEcho -state off -lineNumbers on;']
 
     defaultType = vim.eval ('g:vimyaDefaultFiletype')
     escapedPath = __vimyaEscape (__vimyaFixPath (tmpPath), '\\"')
