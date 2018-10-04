@@ -436,9 +436,9 @@ def vimyaRun (forceBuffer = False, userCmd = None):
 
     global __vimyaLogPath, __vimyaTempFiles
 
-    filetype = vim.eval ('&g:filetype')
-    if filetype not in ['', 'mel', 'python']:
-        return __vimyaError ('Error: Supported filetypes: "python", "mel", None.')
+    # filetype = vim.eval ('&g:filetype')
+    # if filetype not in ['', 'mel', 'python']:
+    #     return __vimyaError ('Error: Supported filetypes: "python", "mel", None.')
 
     if __vimyaLogPath == '':
         if not vimyaResetLog ():
@@ -473,10 +473,10 @@ def vimyaRun (forceBuffer = False, userCmd = None):
     defaultType = vim.eval ('g:vimyaDefaultFiletype')
     escapedPath = __vimyaEscape (__vimyaFixPath (tmpPath), '\\"')
 
-    if filetype == 'python' or (filetype == '' and defaultType == 'python'):
-        commands.append ('python ("execfile (\\"%s\\")");' % escapedPath)
-    elif filetype == 'mel' or (filetype == '' and defaultType == 'mel'):
-        commands.append ('source "%s";' % escapedPath)
+    # if filetype == 'python' or (filetype == '' and defaultType == 'python'):
+    commands.append ('python ("execfile (\\"%s\\")");' % escapedPath)
+    # elif filetype == 'mel' or (filetype == '' and defaultType == 'mel'):
+    #     commands.append ('source "%s";' % escapedPath)
 
     commands.append ('commandEcho -state off -lineNumbers off;')
     commands.append ('sysFile -delete "%s";' % escapedPath)
