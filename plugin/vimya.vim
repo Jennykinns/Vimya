@@ -474,6 +474,13 @@ def vimyaRun (forceBuffer = False, userCmd = None):
     escapedPath = __vimyaEscape (__vimyaFixPath (tmpPath), '\\"')
 
     # if filetype == 'python' or (filetype == '' and defaultType == 'python'):
+    commands.append ('python ('
+                     '"try:\n'
+                     '    from rigging.functions import utils\n'
+                     '    utils.flushPythonCache()\n'
+                     'except ImportError:\n'
+                     '    print(\"Skipping Flush Cache\")'
+                     )
     commands.append ('python ("execfile (\\"%s\\")");' % escapedPath)
     # elif filetype == 'mel' or (filetype == '' and defaultType == 'mel'):
     #     commands.append ('source "%s";' % escapedPath)
