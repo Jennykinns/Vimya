@@ -475,11 +475,11 @@ def vimyaRun (forceBuffer = False, userCmd = None):
 
     # if filetype == 'python' or (filetype == '' and defaultType == 'python'):
     commands.append ('python ('
-                     '"try:\n'
-                     '    from rigging.functions import utils\n'
-                     '    utils.flushPythonCache()\n'
-                     'except ImportError:\n'
-                     '    print(\"Skipping Flush Cache\")'
+                     '\"try:\\n'
+                     '    from rigging.functions import utils\\n'
+                     '    utils.flushPythonCache()\\n'
+                     'except ImportError:\\n'
+                     '    print(\'Skipping Flush Cache\')\")'
                      )
     commands.append ('python ("execfile (\\"%s\\")");' % escapedPath)
     # elif filetype == 'mel' or (filetype == '' and defaultType == 'mel'):
